@@ -1,0 +1,24 @@
+# claude-autodev workflow state
+.autodev/
+.claude/
+CLAUDE-TODO.md
+docs/
+
+# Python
+.venv/
+__pycache__/
+*.egg-info/
+*.pyc
+.pytest_cache/
+
+# Generated subtitle output
+*.vtt
+*.srt
+
+# Browser automation session artifacts
+.playwright-mcp/
+.playwright/
+
+# Local project config / agent instructions (not for the public repo)
+.mcp.json
+CLAUDE.md

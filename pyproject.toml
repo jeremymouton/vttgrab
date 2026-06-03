@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vttgrab"
+version = "0.1.0"
+description = "Download and stitch WebVTT/SRT subtitles from segmented HLS streams (Brightcove/Fastly and friends)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "vttgrab" }]
+keywords = ["webvtt", "srt", "subtitles", "hls", "m3u8", "brightcove", "fastly"]
+classifiers = [
+    "Environment :: Console",
+    "Programming Language :: Python :: 3",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Text Processing",
+]
+# Runtime is intentionally stdlib-only so the tool runs anywhere with no install step.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+vttgrab = "vttgrab.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/example/vttgrab"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+# Network-touching tests are opt-in via: pytest -m live
+markers = ["live: tests that hit the real network (deselected by default)"]
