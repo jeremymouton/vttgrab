@@ -9,6 +9,7 @@ from typing import List, Optional
 from urllib.parse import urlsplit
 
 from . import __version__
+from .cue import format_timestamp
 from .downloader import download_subtitles
 from .fetch import DEFAULT_USER_AGENT, FetchError, HttpFetcher
 from .source import is_m3u8
@@ -116,6 +117,11 @@ def main(argv: Optional[List[str]] = None) -> int:
         if not args.quiet:
             print(msg, file=sys.stderr)
 
+    def vlog(msg: str) -> None:
+        # Extra diagnostics, only when -v/--verbose is set (and not silenced by -q).
+        if args.verbose and not args.quiet:
+            print(msg, file=sys.stderr)
+
     try:
         headers = _parse_header(args.header)
     except argparse.ArgumentTypeError as e:
@@ -154,6 +160,15 @@ def main(argv: Optional[List[str]] = None) -> int:
                 print("", file=sys.stderr)
 
     log(f"vttgrab {__version__} — source: {args.url}")
+    vlog(
+        f"  format={fmt} output={output if output != '-' else 'stdout'} "
+        f"concurrency={args.concurrency} retries={args.retries} timeout={args.timeout}s"
+    )
+    vlog(f"  user-agent: {args.user_agent or DEFAULT_USER_AGENT}")
+    if headers:
+        vlog(f"  extra headers: {headers}")
+    if args.start is not None or args.end is not None:
+        vlog(f"  segment range override: start={args.start} end={args.end}")
     try:
         result = download_subtitles(
             args.url,
@@ -173,6 +188,11 @@ def main(argv: Optional[List[str]] = None) -> int:
     if not result.cues:
         print("error: no subtitle cues were found", file=sys.stderr)
         return 1
+
+    vlog(
+        f"  span: {format_timestamp(result.cues[0].start_ms)} → "
+        f"{format_timestamp(result.cues[-1].end_ms)}"
+    )
 
     text = serialize_srt(result.cues) if fmt == "srt" else serialize_vtt(result.cues)
 

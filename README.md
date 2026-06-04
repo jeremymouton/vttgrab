@@ -71,7 +71,9 @@ vttgrab 'https://…/segment0.vtt?token=…' -o - -q > movie.vtt
 | `-H, --header 'Name: value'` | Extra request header (repeatable), e.g. a `Referer`. |
 | `--user-agent UA` | Override the User-Agent. |
 | `--overwrite` | Replace the output file if it already exists. |
-| `-q, --quiet` / `-v, --verbose` | Quieter / louder progress on stderr. |
+| `-q, --quiet` | Suppress all progress/summary output on stderr. |
+| `-v, --verbose` | Print extra diagnostics on stderr (resolved config, user-agent, extra headers, segment range, and the cue time span). |
+| `--version` | Print the version and exit. |
 
 ## How it works
 
@@ -88,13 +90,13 @@ input URL ─► source.py    decompose into a segment template (+ token) or par
 
 ```bash
 pip install -e '.[dev]'
-pytest                 # unit tests (no network)
-pytest -m live         # opt-in live network tests, if any are added
+pytest                 # 59 unit tests, no network
 ```
 
 The HTTP layer is injected, so the entire pipeline is tested against an
 in-memory fake of the segmented server (`tests/conftest.py`) — no network
-needed for the suite.
+needed for the suite. (A `live` pytest marker is registered for opt-in
+network tests, but none ship today.)
 
 ## Notes & limits
 

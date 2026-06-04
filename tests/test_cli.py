@@ -103,6 +103,23 @@ def test_cli_no_cues_returns_error(monkeypatch, tmp_path):
     assert rc == 1
 
 
+def test_cli_verbose_emits_diagnostics(patched_fetcher, tmp_path, capsys):
+    out = tmp_path / "m.vtt"
+    rc = cli.main(["https://cdn/x/y/segment0.vtt?tok=1", "-o", str(out), "-v"])
+    assert rc == 0
+    err = capsys.readouterr().err
+    assert "format=vtt" in err
+    assert "span:" in err  # first→last cue diagnostic only appears with -v
+
+
+def test_cli_verbose_silent_without_flag(patched_fetcher, tmp_path, capsys):
+    out = tmp_path / "m.vtt"
+    cli.main(["https://cdn/x/y/segment0.vtt?tok=1", "-o", str(out)])
+    err = capsys.readouterr().err
+    assert "span:" not in err
+    assert "format=vtt" not in err
+
+
 def test_default_output_name_for_m3u8():
     assert cli._default_output("https://h/p/subs.m3u8?t=1", "vtt") == "subs.vtt"
     assert cli._default_output("https://h/p/segment0.vtt?t=1", "srt") == "subtitles.srt"
